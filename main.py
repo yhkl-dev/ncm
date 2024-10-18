@@ -1,3 +1,4 @@
+import argparse
 import base64
 import binascii
 import json
@@ -11,6 +12,7 @@ from Crypto.Cipher import AES
 
 from save_cover import save_cover, save_cover_mp3
 
+IMAGE_CACHE_DIR = "./cache_image"
 
 def download_pic(url, save_fn):
     headers = {
@@ -88,7 +90,8 @@ def dump(file_path, output_dir):
     f.close()
     if cover_url.endswith("jpg"):
         image_name_uuid = uuid4()
-        save_cover_jpg_name = f"./cache_image/{image_name_uuid}.jpg"
+        save_cover_jpg_name = os.path.join(IMAGE_CACHE_DIR,  f"{image_name_uuid}.jpg")
+
         download_pic(cover_url, save_cover_jpg_name)
         if file_name.endswith("flac"):
             save_cover(file_name, save_cover_jpg_name)
@@ -100,11 +103,13 @@ def dump(file_path, output_dir):
     return file_name
 
 if __name__ == '__main__':
-    import argparse
     parser = argparse.ArgumentParser(description="Convert NCM files to standard format")
     parser.add_argument('-p', '--path', required=True, help='Path to the directory containing NCM files')
     parser.add_argument('-o', '--output', required=True, help='Output directory for converted files')
     args = parser.parse_args()
+
+    if not os.path.exists(IMAGE_CACHE_DIR):
+        os.makedirs(IMAGE_CACHE_DIR)
 
     if not os.path.exists(args.output):
         os.makedirs(args.output)
