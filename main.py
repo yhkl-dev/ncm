@@ -75,6 +75,10 @@ def dump(file_path, output_dir):
     image_size = struct.unpack('<I', bytes(image_size))[0]
     image_data = f.read(image_size)
     file_name = os.path.join(output_dir, os.path.basename(f.name).split(".ncm")[0] + '.' + meta_data['format'])
+    if os.path.exists(file_name):
+        print(f"file: {file_name} exist")
+        f.close()
+        return file_name
     m = open(file_name, 'wb')
     chunk = bytearray()
     while True:
